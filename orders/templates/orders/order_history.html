@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Order History</span>
+        <div class="section-toolbar">
+            <div>
+                <h1 class="panel-title">Your recent purchases.</h1>
+                <p class="panel-subtitle">Every order stays visible here so farmers can review what they bought and from whom.</p>
+            </div>
+            <a class="button" href="{% url 'products:list' %}">Browse products</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="order-grid">
+            {% for order in orders %}
+            <article class="card order-card">
+                <div class="order-header">
+                    <div>
+                        <h2>{{ order.product.name }}</h2>
+                        <p class="order-copy">Vendor: {{ order.product.vendor.get_full_name|default:order.product.vendor.username }}</p>
+                    </div>
+                    <span class="qty-tag">Qty: {{ order.quantity }}</span>
+                </div>
+                <p class="order-copy"><strong>Status:</strong> {{ order.get_status_display }}</p>
+                <p class="order-copy">Ordered on {{ order.created_at|date:"M d, Y" }}</p>
+                <div class="inline-actions">
+                    <a class="button" href="{% url 'orders:detail' order.pk %}">View invoice</a>
+                    <a class="button button-ghost" href="{% url 'products:detail' order.product.pk %}">View product</a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="card empty-state">
+                <h2>No orders yet</h2>
+                <p>When you buy a product, it will show up here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

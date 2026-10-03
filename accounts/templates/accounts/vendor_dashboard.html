@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Dashboard | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel dashboard-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Vendor Dashboard</span>
+        <div class="split-hero">
+            <div>
+                <h1 class="panel-title">Manage your produce storefront with precision.</h1>
+                <p class="panel-subtitle">Control listings, refresh inventory, and keep your market presence sharp with a modern agriculture-first dashboard.</p>
+                <div class="actions">
+                    <a class="button" href="{% url 'products:add' %}">Add product</a>
+                    <a class="button button-secondary" href="{% url 'products:list' %}">View catalog</a>
+                    <a class="button button-ghost" href="{% url 'orders:completed' %}">Completed orders</a>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-stat-grid">
+                    <div class="metric">
+                        <span class="metric-value">{{ request.user.get_role_display }}</span>
+                        <span class="metric-label">Access Level</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">Ready</span>
+                        <span class="metric-label">Store Status</span>
+                    </div>
+                </div>
+                <p class="helper-text">This workspace is optimized for vendors and admins who need clean product management with minimal friction.</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="card-grid">
+            <article class="card span-4">
+                <h2>Create listings</h2>
+                <p>Add fresh products with pricing, imagery, and descriptions designed to convert quickly.</p>
+            </article>
+            <article class="card span-4">
+                <h2>Update inventory</h2>
+                <p>Edit existing products as your harvest, availability, or packaging changes throughout the season.</p>
+            </article>
+            <article class="card span-4">
+                <h2>Operate cleanly</h2>
+                <p>Keep your storefront polished with a focused dashboard and clear content structure.</p>
+            </article>
+            <article class="card span-12">
+                <h2>Recent order statuses</h2>
+                <p>Update shipment progress for incoming farmer orders.</p>
+                <div class="review-list">
+                    {% for order in vendor_orders %}
+                    <div class="card review-card">
+                        <div class="review-header">
+                            <div>
+                                <h3>{{ order.product.name }}</h3>
+                                <p class="helper-text">{{ order.user.get_full_name|default:order.user.username }} | Qty {{ order.quantity }}</p>
+                            </div>
+                            <span class="price-tag">{{ order.get_status_display }}</span>
+                        </div>
+                        <p class="product-copy">{{ order.city }}, {{ order.state }}</p>
+                        <div class="inline-actions">
+                            <a class="button button-secondary" href="{% url 'orders:status_update' order.pk %}">Update status</a>
+                            {% if order.status != "DELIVERED" %}
+                            <form method="post" action="{% url 'orders:mark_delivered' order.pk %}" class="inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{% url 'accounts:vendor_dashboard' %}">
+                                <button type="submit" class="button">Mark as Delivered</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="card empty-state">
+                        <h3>No active orders</h3>
+                        <p>Delivered orders are moved out of this queue. New incoming orders will appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}

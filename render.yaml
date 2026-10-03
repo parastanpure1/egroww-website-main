@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: egroww
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn egroww.wsgi:application"
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true

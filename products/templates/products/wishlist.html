@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Wishlist</span>
+        <div class="section-toolbar">
+            <div>
+                <h1 class="panel-title">Saved products for later.</h1>
+                <p class="panel-subtitle">A simple place to keep products you want to revisit before buying.</p>
+            </div>
+            <a class="button" href="{% url 'products:list' %}">Browse products</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="product-grid">
+            {% for item in wishlist_items %}
+            <article class="card product-card">
+                {% if item.product.image %}
+                <img class="product-image" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% endif %}
+                <div class="product-header">
+                    <div>
+                        <h2>{{ item.product.name }}</h2>
+                        <p class="product-copy">By {{ item.product.vendor.get_full_name|default:item.product.vendor.username }}</p>
+                    </div>
+                    <span class="price-tag">Rs. {{ item.product.price }}</span>
+                </div>
+                <p class="product-copy">{{ item.product.description|truncatewords:18 }}</p>
+                <div class="inline-actions">
+                    <a class="button" href="{% url 'products:detail' item.product.pk %}">View product</a>
+                    <form method="post" action="{% url 'products:wishlist_toggle' item.product.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'products:wishlist' %}">
+                        <button type="submit" class="button button-ghost">Remove</button>
+                    </form>
+                </div>
+            </article>
+            {% empty %}
+            <div class="card empty-state">
+                <h2>Your wishlist is empty</h2>
+                <p>Save products from the marketplace and they will appear here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

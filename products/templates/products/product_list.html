@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Products | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Marketplace</span>
+        <div class="section-toolbar">
+            <div>
+                <h1 class="panel-title">Fresh products from a modern farm network.</h1>
+                <p class="panel-subtitle">Browse current listings from vendors across the platform with simple actions and clear product details.</p>
+            </div>
+            <div class="actions">
+                {% if request.user.role == "VENDOR" or request.user.role == "ADMIN" or request.user.is_superuser %}
+                <a class="button" href="{% url 'products:add' %}">Add product</a>
+                {% endif %}
+                {% if request.user.role == "FARMER" %}
+                <a class="button button-secondary" href="{% url 'orders:history' %}">My orders</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        {% if search_query %}
+        <p class="section-copy">Showing results for "{{ search_query }}".</p>
+        {% endif %}
+        <div class="product-grid" data-product-grid>
+            {% for product in products %}
+            <article class="card product-card" data-product-card data-product-name="{{ product.name|lower }}">
+                {% if product.image %}
+                <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <div class="product-header">
+                    <div>
+                        <h2>{{ product.name }}</h2>
+                        <p class="product-copy">By {{ product.vendor.get_full_name|default:product.vendor.username }}</p>
+                    </div>
+                    <span class="price-tag">Rs. {{ product.price }}</span>
+                </div>
+                <p class="product-copy">{{ product.description|truncatewords:24 }}</p>
+                <div class="inline-actions">
+                    <a class="button" href="{% url 'products:detail' product.pk %}">View details</a>
+                    {% if request.user.role == "FARMER" %}
+                    <form method="post" action="{% url 'products:wishlist_toggle' product.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'products:list' %}{% if request.GET.q %}?q={{ request.GET.q }}{% endif %}{% if request.GET.page %}{% if request.GET.q %}&{% else %}?{% endif %}page={{ request.GET.page }}{% endif %}">
+                        <button type="submit" class="button button-ghost">
+                            {% if product.pk in wishlist_product_ids %}Remove wishlist{% else %}Save{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if request.user == product.vendor or request.user.role == "ADMIN" or request.user.is_superuser %}
+                    <a class="button button-secondary" href="{% url 'products:edit' product.pk %}">Edit</a>
+                    <a class="button button-danger" href="{% url 'products:delete' product.pk %}">Delete</a>
+                    {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <div class="card empty-state">
+                <h2>No products yet</h2>
+                <p>Products added by vendors will appear here once the catalog starts growing.</p>
+            </div>
+            {% endfor %}
+            <div class="card empty-state search-empty-state is-hidden" data-search-empty-state>
+                <h2>No matching products</h2>
+                <p>Try a different product name in the search bar.</p>
+            </div>
+        </div>
+        {% if is_paginated %}
+        <div class="pagination-bar">
+            {% if page_obj.has_previous %}
+            <a class="button button-ghost pagination-link" href="?page={{ page_obj.previous_page_number }}{{ query_string }}">Previous</a>
+            {% else %}
+            <span class="pagination-link pagination-link-disabled">Previous</span>
+            {% endif %}
+
+            <p class="pagination-status">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
+            {% if page_obj.has_next %}
+            <a class="button button-ghost pagination-link" href="?page={{ page_obj.next_page_number }}{{ query_string }}">Next</a>
+            {% else %}
+            <span class="pagination-link pagination-link-disabled">Next</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

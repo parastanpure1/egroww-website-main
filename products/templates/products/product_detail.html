@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Product Detail</span>
+        <div class="section-toolbar">
+            <div>
+                <h1 class="panel-title">{{ product.name }}</h1>
+                <p class="panel-subtitle">Added by {{ product.vendor.get_full_name|default:product.vendor.username }}</p>
+            </div>
+            <div class="actions">
+                {% if request.user.role == "FARMER" %}
+                <a class="button button-secondary" href="{% url 'orders:history' %}">My orders</a>
+                <a class="button button-ghost" href="{% url 'products:wishlist' %}">Wishlist</a>
+                {% endif %}
+                <a class="button button-ghost" href="{% url 'products:list' %}">Back to products</a>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="product-detail-layout">
+            <article class="card">
+                {% if product.image %}
+                <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <div class="product-header">
+                    <h2>{{ product.name }}</h2>
+                    <span class="price-tag">Rs. {{ product.price }}</span>
+                </div>
+                <div class="rating-summary">
+                    <strong class="rating-value">
+                        {% if average_rating %}
+                        {{ average_rating|floatformat:1 }}/5
+                        {% else %}
+                        No ratings yet
+                        {% endif %}
+                    </strong>
+                    <span class="helper-text">{{ reviews|length }} review{{ reviews|length|pluralize }}</span>
+                </div>
+                <p class="product-copy">{{ product.description }}</p>
+                <p class="helper-text">Created on {{ product.created_at|date:"M d, Y" }}</p>
+            </article>
+            <div class="card-grid">
+                {% if request.user.role == "FARMER" %}
+                <article class="card span-12">
+                    <h2>Buy this product</h2>
+                    <p>Place an order now and keep everything organized in your order history.</p>
+                    <div class="inline-actions">
+                        <a class="button" href="{% url 'orders:buy' product.pk %}">Buy now</a>
+                        <form method="post" action="{% url 'products:wishlist_toggle' product.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'products:detail' product.pk %}">
+                            <button type="submit" class="button button-ghost">
+                                {% if is_in_wishlist %}Remove wishlist{% else %}Add to wishlist{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </article>
+                <article class="card span-12">
+                    <h2>Rate and review</h2>
+                    <p>Share your feedback to help other farmers judge product quality.</p>
+                    <form method="post" action="{% url 'products:review' product.pk %}">
+                        {% csrf_token %}
+                        <div class="field-group">
+                            <label for="{{ review_form.rating.id_for_label }}">Rating</label>
+                            {{ review_form.rating }}
+                            {{ review_form.rating.errors }}
+                        </div>
+                        <div class="field-group">
+                            <label for="{{ review_form.review.id_for_label }}">Review</label>
+                            {{ review_form.review }}
+                            {{ review_form.review.errors }}
+                        </div>
+                        <button type="submit">Save review</button>
+                    </form>
+                </article>
+                {% endif %}
+                {% if request.user == product.vendor or request.user.role == "ADMIN" or request.user.is_superuser %}
+                <article class="card span-12">
+                    <h2>Manage this product</h2>
+                    <p>Update the listing or remove it from the marketplace when needed.</p>
+                    <div class="inline-actions">
+                        <a class="button button-secondary" href="{% url 'products:edit' product.pk %}">Edit</a>
+                        <a class="button button-danger" href="{% url 'products:delete' product.pk %}">Delete</a>
+                    </div>
+                </article>
+                {% endif %}
+            </div>
+        </div>
+        <section class="review-section">
+            <div class="section-toolbar">
+                <div>
+                    <h2 class="section-heading">Farmer reviews</h2>
+                    <p class="section-copy">Real feedback from logged-in farmers who reviewed this product.</p>
+                </div>
+            </div>
+            <div class="review-list">
+                {% for review in reviews %}
+                <article class="card review-card">
+                    <div class="review-header">
+                        <div>
+                            <h3>{{ review.user.get_full_name|default:review.user.username }}</h3>
+                            <p class="helper-text">{{ review.created_at|date:"M d, Y" }}</p>
+                        </div>
+                        <span class="price-tag">{{ review.rating }}/5</span>
+                    </div>
+                    <p class="product-copy">{{ review.review }}</p>
+                </article>
+                {% empty %}
+                <div class="card empty-state">
+                    <h3>No reviews yet</h3>
+                    <p>The first farmer review for this product will appear here.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

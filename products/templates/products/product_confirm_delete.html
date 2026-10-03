@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Product | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel auth-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Delete Listing</span>
+        <h1 class="panel-title">Remove this product from the marketplace?</h1>
+        <p class="panel-subtitle">This action is intended for vendors and admins cleaning up outdated inventory.</p>
+    </div>
+    <div class="panel-body">
+        <article class="card">
+            <h2>{{ object.name }}</h2>
+            <p class="product-copy">Rs. {{ object.price }}</p>
+        </article>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="button-danger">Delete product</button>
+        </form>
+        <p class="muted-link center-text auth-links">
+            <a href="{% url 'products:detail' object.pk %}">Cancel</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

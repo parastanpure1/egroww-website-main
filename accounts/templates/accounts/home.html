@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Home | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel dashboard-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Farmer Dashboard</span>
+        <div class="split-hero">
+            <div>
+                <h1 class="panel-title">Fresh sourcing made simple for {{ request.user.first_name|default:request.user.username }}.</h1>
+                <p class="panel-subtitle">Track your purchases, discover new products, and keep your supply chain moving with a calmer, greener workflow.</p>
+                <div class="actions">
+                    <a class="button" href="{% url 'products:list' %}">Browse products</a>
+                    <a class="button button-secondary" href="{% url 'orders:history' %}">View orders</a>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-stat-grid">
+                    <div class="metric">
+                        <span class="metric-value">{{ request.user.get_role_display }}</span>
+                        <span class="metric-label">Account Type</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">Live</span>
+                        <span class="metric-label">Marketplace Status</span>
+                    </div>
+                </div>
+                <p class="helper-text">Your farmer workspace is tuned for fast product discovery and smooth repeat ordering.</p>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="card-grid">
+            <article class="card span-4">
+                <h2>Find fresh inventory</h2>
+                <p>Explore vendor listings with pricing, descriptions, and product images in one clean catalog.</p>
+            </article>
+            <article class="card span-4">
+                <h2>Order with confidence</h2>
+                <p>Create quick orders directly from product pages and keep your order history easy to review.</p>
+            </article>
+            <article class="card span-4">
+                <h2>Stay organized</h2>
+                <p>Use your dashboard as the starting point for buying decisions across the platform.</p>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}eGroww | Smart Agriculture{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel home-hero-panel">
+    <div class="panel-header home-hero">
+        <div class="home-copy">
+            <span class="eyebrow">Smart Agriculture</span>
+            <h1 class="panel-title">Empowering Farmers with Smart Agriculture</h1>
+            <p class="panel-subtitle">
+                eGroww brings farmers, vendors, and buyers into one modern agriculture platform with cleaner product discovery, faster ordering, and better visibility.
+            </p>
+            <div class="actions">
+                <a class="button" href="{% url 'products:list' %}">Explore Products</a>
+                {% if request.user.is_authenticated %}
+                {% if request.user.role == "VENDOR" or request.user.role == "ADMIN" or request.user.is_superuser %}
+                <a class="button button-secondary" href="{% url 'accounts:vendor_dashboard' %}">Open Dashboard</a>
+                {% else %}
+                <a class="button button-secondary" href="{% url 'accounts:home' %}">Farmer Dashboard</a>
+                {% endif %}
+                {% else %}
+                <a class="button button-secondary" href="{% url 'accounts:register' %}">Get Started</a>
+                <a class="button button-ghost" href="{% url 'accounts:login' %}">Login</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="hero-showcase">
+            <div class="showcase-card">
+                <p class="showcase-label">Fresh Marketplace</p>
+                <h2>Direct trade with a greener digital workflow</h2>
+                <ul class="list-plain">
+                    <li>
+                        <span>Vendor product management</span>
+                        <strong>Live</strong>
+                    </li>
+                    <li>
+                        <span>Farmer order history</span>
+                        <strong>Ready</strong>
+                    </li>
+                    <li>
+                        <span>Role-based dashboards</span>
+                        <strong>Active</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-panel content-panel section-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Featured Products</span>
+        <div class="section-toolbar">
+            <div>
+                <h2 class="section-heading">Fresh picks from the marketplace</h2>
+                <p class="section-copy">A quick look at recently added products vendors are bringing to eGroww.</p>
+            </div>
+            <a class="button button-ghost" href="{% url 'products:list' %}">See All Products</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <article class="card product-card">
+                {% if product.image %}
+                <img class="product-image" src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <div class="product-header">
+                    <div>
+                        <h3>{{ product.name }}</h3>
+                        <p class="product-copy">By {{ product.vendor.get_full_name|default:product.vendor.username }}</p>
+                    </div>
+                    <span class="price-tag">Rs. {{ product.price }}</span>
+                </div>
+                <p class="product-copy">{{ product.description|truncatewords:20 }}</p>
+                <a class="button" href="{% url 'products:detail' product.pk %}">View Product</a>
+            </article>
+            {% empty %}
+            <div class="card empty-state">
+                <h3>No featured products yet</h3>
+                <p>As vendors add products, this section will start showcasing them here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="page-panel content-panel cta-panel">
+    <div class="panel-body cta-band">
+        <div>
+            <span class="eyebrow">Grow With eGroww</span>
+            <h2 class="section-heading">Bring smarter buying and selling to agriculture.</h2>
+            <p class="section-copy">Join the platform to list fresh products, discover trusted vendors, and keep your farm commerce simple.</p>
+        </div>
+        <div class="actions">
+            <a class="button" href="{% url 'accounts:register' %}">Create Account</a>
+            <a class="button button-secondary" href="{% url 'products:list' %}">Browse Products</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

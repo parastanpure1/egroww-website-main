@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Completed Orders | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel content-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Completed Orders</span>
+        <div class="section-toolbar">
+            <div>
+                <h1 class="panel-title">Delivered orders archive.</h1>
+                <p class="panel-subtitle">A clean record of orders that were marked as delivered.</p>
+            </div>
+            <a class="button" href="{% url 'accounts:vendor_dashboard' %}">Back to dashboard</a>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="review-list">
+            {% for order in orders %}
+            <article class="card review-card">
+                <div class="review-header">
+                    <div>
+                        <h3>{{ order.product.name }}</h3>
+                        <p class="helper-text">
+                            {{ order.user.get_full_name|default:order.user.username }} | Qty {{ order.quantity }}
+                        </p>
+                    </div>
+                    <span class="price-tag">{{ order.get_status_display }}</span>
+                </div>
+                <p class="product-copy">{{ order.city }}, {{ order.state }}</p>
+                <p class="helper-text">Delivered order recorded on {{ order.created_at|date:"M d, Y" }}</p>
+            </article>
+            {% empty %}
+            <div class="card empty-state">
+                <h3>No completed orders yet</h3>
+                <p>Orders marked as delivered will appear here.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Login | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel auth-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Welcome Back</span>
+        <h1 class="panel-title">Grow your marketplace with clarity.</h1>
+        <p class="panel-subtitle">Sign in to manage products, buy fresh goods, and keep your agriculture workflow moving.</p>
+    </div>
+    <div class="panel-body">
+        {% if form.non_field_errors %}
+        <ul class="errors">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="field-group">
+                <label for="{{ form.username.id_for_label }}">Username</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="field-group">
+                <label for="{{ form.password.id_for_label }}">Password</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p class="muted-link center-text auth-links">
+            New here? <a href="{% url 'accounts:register' %}">Create an account</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

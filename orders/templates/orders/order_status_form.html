@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Update Order Status | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel auth-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Order Status</span>
+        <h1 class="panel-title">Update delivery progress.</h1>
+        <p class="panel-subtitle">Keep farmers informed by marking each order as pending, shipped, or delivered.</p>
+    </div>
+    <div class="panel-body">
+        <article class="card">
+            <h2>{{ object.product.name }}</h2>
+            <p class="product-copy">Farmer: {{ object.user.get_full_name|default:object.user.username }}</p>
+            <p class="product-copy">Quantity: {{ object.quantity }}</p>
+        </article>
+        <form method="post">
+            {% csrf_token %}
+            <div class="field-group">
+                <label for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+                {{ form.status.errors }}
+            </div>
+            <button type="submit">Save status</button>
+        </form>
+        <p class="muted-link center-text auth-links">
+            <a href="{% url 'accounts:vendor_dashboard' %}">Back to dashboard</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Order Invoice | eGroww{% endblock %}
+
+{% block body %}
+<section class="page-panel auth-panel invoice-panel">
+    <div class="panel-header">
+        <span class="eyebrow">Invoice</span>
+        <h1 class="panel-title">Order #{{ order.pk }}</h1>
+        <p class="panel-subtitle">A simple bill summary for your recent purchase.</p>
+    </div>
+    <div class="panel-body">
+        <article class="card invoice-card">
+            <div class="invoice-row invoice-row-header">
+                <div>
+                    <h2>{{ order.product.name }}</h2>
+                    <p class="product-copy">Vendor: {{ order.product.vendor.get_full_name|default:order.product.vendor.username }}</p>
+                </div>
+                <span class="price-tag">{{ order.get_status_display }}</span>
+            </div>
+
+            <div class="invoice-table">
+                <div class="invoice-line">
+                    <span>Product name</span>
+                    <strong>{{ order.product.name }}</strong>
+                </div>
+                <div class="invoice-line">
+                    <span>Quantity</span>
+                    <strong>{{ order.quantity }}</strong>
+                </div>
+                <div class="invoice-line">
+                    <span>Price per item</span>
+                    <strong>Rs. {{ order.product.price }}</strong>
+                </div>
+                <div class="invoice-line invoice-total">
+                    <span>Total price</span>
+                    <strong>Rs. {{ order.total_price }}</strong>
+                </div>
+            </div>
+
+            <div class="invoice-note">
+                <strong>Payment to be made on delivery</strong>
+            </div>
+        </article>
+
+        <p class="muted-link center-text auth-links">
+            <a href="{% url 'orders:history' %}">Back to orders</a>
+        </p>
+    </div>
+</section>
+{% endblock %}
